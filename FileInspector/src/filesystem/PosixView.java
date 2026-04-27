@@ -7,6 +7,29 @@ package filesystem;
  */
 public interface PosixView
 {
+    // --- File Type Constants (Octal) ---
+    int S_IFMT = 0170000; // Bit mask for the file type bit field
+    int S_IFSOCK = 0140000; // Socket
+    int S_IFLNK = 0120000; // Symbolic link
+    int S_IFREG = 0100000; // Regular file
+    int S_IFBLK = 0060000; // Block device
+    int S_IFDIR = 0040000; // Directory
+    int S_IFCHR = 0020000; // Character device
+    int S_IFIFO = 0010000; // FIFO
+
+    // --- Permission Constants (Octal) ---
+    int S_IRUSR = 00400; // User Read
+    int S_IWUSR = 00200; // User Write
+    int S_IXUSR = 00100; // User Execute
+
+    int S_IRGRP = 00040; // Group Read
+    int S_IWGRP = 00020; // Group Write
+    int S_IXGRP = 00010; // Group Execute
+
+    int S_IROTH = 00004; // Other Read
+    int S_IWOTH = 00002; // Other Write
+    int S_IXOTH = 00001; // Other Execute
+
     /**
      * Returns the name of the user that owns the file.
      * 
@@ -29,12 +52,12 @@ public interface PosixView
     String getPermissions();
 
     /**
-     * Returns the standard character representation of the file type. (e.g., 'd' for directory, 'l'
-     * for link, '-' for regular file).
+     * Returns the raw numeric mode (permissions and type bits) of the file. typically represented
+     * in octal (e.g., 0755).
      * 
-     * @return the POSIX type character
+     * @return the integer mode
      */
-    char toPosixTypeChar();
+    int getMode();
 
     /**
      * Returns the numeric User Identifier (UID) of the file owner.
@@ -51,10 +74,18 @@ public interface PosixView
     int getGID();
 
     /**
-     * Returns the raw numeric mode (permissions and type bits) of the file. typically represented
-     * in octal (e.g., 0755).
+     * Returns the standard character representation of the file type. (e.g., 'd' for directory, 'l'
+     * for link, '-' for regular file).
      * 
-     * @return the integer mode
+     * @return the POSIX type character
      */
-    int getMode();
+    char toPosixTypeChar();
+
+    /**
+     * Returns the human-readable string representation of the file type and permissions, for
+     * example: "-rwxr-xr-x"
+     * 
+     * @return the POSIX permission string
+     */
+    String getPermissionsString();
 }

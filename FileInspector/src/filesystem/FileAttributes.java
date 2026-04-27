@@ -5,7 +5,8 @@ import java.util.Optional;
 
 public interface FileAttributes
 {
-    public Path getPath();
+    public Path getOriginalPath();
+    public Path getAbsolutePath();
     public String getName();
     public long size();
     public Path getRealPath();

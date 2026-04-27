@@ -33,11 +33,14 @@ Simply include the `filesystem` package source files in your Java 8 project.
 import filesystem.*;
 import java.io.IOException;
 
-try {
+try
+{
     AbstractFileNode node = FileInspector.inspect("config.xml");
     System.out.println("File: " + node.getName());
     System.out.println("Size: " + node.size() + " bytes");
-} catch (IOException e) {
+}
+catch (IOException e)
+{
     e.printStackTrace();
 }
 ```
@@ -45,9 +48,11 @@ try {
 ### Advanced Windows Attributes
 ```java
 Optional<DosView> dos = node.as(DosView.class);
-if (dos.isPresent()) {
+if (dos.isPresent())
+{
     DosView view = dos.get();
-    if (view.isCompressed()) {
+    if (view.isCompressed())
+    {
         System.out.println("NTFS Compression is enabled.");
     }
     System.out.println("Raw Attribute Mask: " + view.getAttributesMask());
@@ -57,7 +62,8 @@ if (dos.isPresent()) {
 ### POSIX Metadata
 ```java
 Optional<PosixView> nix = node.as(PosixView.class);
-if (nix.isPresent()) {
+if (nix.isPresent())
+{
     PosixView view = nix.get();
     System.out.println("Owner UID: " + view.getUID());
     System.out.println("Group GID: " + view.getGID());

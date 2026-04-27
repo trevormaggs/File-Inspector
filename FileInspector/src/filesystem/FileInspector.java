@@ -82,7 +82,7 @@ public final class FileInspector
         {
             AbstractFileNode node = FileInspector.inspect("POOL19.txt");
 
-            System.out.println("Path: " + node.getPath());
+            System.out.println("Path: " + node.getOriginalPath());
             System.out.println("Size: " + node.size());
 
             Optional<DosView> dosOpt = node.as(DosView.class);
@@ -90,6 +90,7 @@ public final class FileInspector
             if (dosOpt.isPresent())
             {
                 System.out.println("Is Hidden: " + dosOpt.get().isHidden());
+                System.out.println("Attributes: " + dosOpt.get().getAttributesString());
             }
         }
 

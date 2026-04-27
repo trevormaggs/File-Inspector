@@ -133,4 +133,6 @@ public interface DosView
      * @return true if the FILE_ATTRIBUTE_NO_SCRUB_DATA bit is set
      */
     boolean isNoScrubData();
+    
+    String getAttributesString();
 }
