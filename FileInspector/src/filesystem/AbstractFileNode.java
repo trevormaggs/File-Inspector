@@ -30,7 +30,8 @@ public abstract class AbstractFileNode implements FileAttributes
      *        the path to the file to inspect
      * @param followSymlink
      *        if true, follows symbolic links to the target file, or if false, retrieves attributes
-     *        for the link itself.
+     *        for the link itself
+     *
      * @throws IOException
      *         if the file does not exist or cannot be accessed
      */
@@ -79,8 +80,8 @@ public abstract class AbstractFileNode implements FileAttributes
     /**
      * Retrieves the size of the file.
      *
-     * @return the size of the file in bytes. Note that for directories, this value is
-     *         platform-dependent and does not reflect the sum of its contents
+     * @return the size of the file in bytes. Note for directories, this value is platform-dependent
+     *         and does not reflect the sum of its contents
      */
     @Override
     public long size()
@@ -108,7 +109,7 @@ public abstract class AbstractFileNode implements FileAttributes
         }
         catch (IOException exc)
         {
-            // Silently fail and fallback to fpath
+            // Silently fallback to fpath
         }
 
         return fpath;
@@ -126,7 +127,8 @@ public abstract class AbstractFileNode implements FileAttributes
     }
 
     /**
-     * Checks if the file attributes were successfully captured.
+     * Checks if the file attributes were successfully captured. Use this to check if the file
+     * exists or not.
      *
      * @return {@code true} if the internal attribute snapshot is present
      */
@@ -150,7 +152,8 @@ public abstract class AbstractFileNode implements FileAttributes
     /**
      * Checks if the path represents a regular file.
      *
-     * @return {@code true} if the file is a regular file (not a directory, link, or device)
+     * @return {@code true} if the file is a regular file or {@code false} if it is a directory,
+     *         link, or device
      */
     @Override
     public boolean isRegularFile()
@@ -161,7 +164,8 @@ public abstract class AbstractFileNode implements FileAttributes
     /**
      * Checks if the file is a special system object.
      *
-     * @return {@code true} if the file is an "other" type, such as a pipe, socket, or device
+     * @return {@code true} if the file is an "other" type, such as a pipe, socket, or device,
+     *         rather than a regular file, directory, or symbolic link
      */
     @Override
     public boolean isOtherFile()
@@ -239,7 +243,7 @@ public abstract class AbstractFileNode implements FileAttributes
     }
 
     /**
-     * Attempts to cast this node to a specific view interface (e.g., DosView or PosixView).
+     * Attempts to cast this node to a specific view interface, such as DosView or PosixView.
      *
      * @param <T>
      *        the type of view requested

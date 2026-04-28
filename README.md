@@ -5,11 +5,11 @@ A high-quality, comprehensive Java 8 library for cross-platform filesystem attri
 ## Features
 
 - **Static Factory Design:** Centralised entry point via `FileInspector` for automatic OS/Filesystem detection.
-- **Deep Windows Support:** Access to 20+ Win32 file attribute constants (Hidden, System, Compressed, Encrypted, Sparse, etc.) via `DosView`.
+- **Deep Windows Support:** Access to 20+ Win32 file attribute constants (Hidden, System, Compressed, Encrypted, Sparse, etc.) via `DosView`, now using optimised short-hex literals.
 - **POSIX Excellence:** Comprehensive Unix/Linux/macOS metadata including numeric UID/GID, octal modes, and permission strings.
 - **Fluent Adapter Pattern:** Use the `.as(Class<T> type)` method to safely downcast to platform-specific views without risky `instanceof` checks.
-- **Robust Path Handling:** Internal normalisation and absolute path tracking alongside original path preservation.
-- **Java 8 Compatibility:** Written strictly for Java 8 standards (no lambdas or functional interfaces).
+- **Diagnostic Formatting:** Built-in `toString()` overrides provide beautifully aligned, human-readable summaries of all file metadata.
+- **Java 8 Compatibility:** Written strictly for Java 8 standards, requiring no external dependencies.
 
 ## Architecture
 
@@ -20,25 +20,23 @@ The library is built on four core pillars:
 3. **`AbstractFileNode` (Base Class):** Handles shared logic like path normalisation and attribute snapshots.
 4. **`DosView` & `PosixView` (Capability Interfaces):** Provide access to deep, platform-specific attributes.
 
-
-
 ## Installation
 
-Simply include the `filesystem` package source files in your Java 8 project.
+Simply include the `filesystem` package source files in your Java 8 project. No external JARs are required.
 
 ## Usage
 
-### Basic Inspection
+### Basic Inspection & Diagnostic Output
 ```java
 import filesystem.*;
 import java.io.IOException;
 
 try
 {
-    AbstractFileNode node = FileInspector.inspect("config.xml");
-    System.out.println("File: " + node.getName());
-    System.out.println("Size: " + node.size() + " bytes");
-}
+    FileAttributes node = FileInspector.inspect("data/archive.zip");
+    // Print the beautifully formatted diagnostic summary
+    System.out.println(node.toString());
+} 
 catch (IOException e)
 {
     e.printStackTrace();
@@ -55,7 +53,8 @@ if (dos.isPresent())
     {
         System.out.println("NTFS Compression is enabled.");
     }
-    System.out.println("Raw Attribute Mask: " + view.getAttributesMask());
+    // Accessing the cleaned-up hex mask
+    System.out.println("Attributes String: " + view.getAttributesString());
 }
 ```
 
@@ -65,31 +64,35 @@ Optional<PosixView> nix = node.as(PosixView.class);
 if (nix.isPresent())
 {
     PosixView view = nix.get();
-    System.out.println("Owner UID: " + view.getUID());
-    System.out.println("Group GID: " + view.getGID());
-    System.out.println("Permissions: " + view.getPermissions()); // e.g., rwxr-xr-x
+    System.out.println("Permissions: " + view.getPermissionsString()); // e.g., -rwxr-xr-x
+    System.out.println("Numeric UID: " + view.getUID());
 }
 ```
 
 ## API Reference
 
 ### FileInspector
-- `static AbstractFileNode inspect(String name)`
-- `static AbstractFileNode inspect(Path path, boolean followSymlink)`
+- `static FileAttributes inspect(Path path, boolean followSymlink)`
+- `static FileAttributes inspect(String pathString)`
 
-### FileAttributes
+### Common Attributes (FileAttributes)
 - `getName()`: Returns the filename.
-- `getPath()`: Returns the path as originally provided to the factory.
+- `getOriginalPath()`: Returns the path as originally provided.
 - `getAbsolutePath()`: Returns the normalised, absolute path.
 - `getRealPath()`: Resolves symbolic links to the final target on disk.
 - `as(Class<T> type)`: Returns an `Optional<T>` adapter for specialised views.
-- `brokenSymLink()`: Reliably detects dead symbolic links by comparing snapshot attributes with real-time disk state.
+- `toString()`: Returns a multi-line, formatted diagnostic summary.
 
 ## Change Logs
-- **April 2026:** Migrated to static factory pattern, implemented `Optional` adapters, and added comprehensive Win32 attribute bitmasking.
+- **April 2026:** - Migrated to static factory pattern.
+    - Implemented `Optional` adapters.
+    - Simplified Win32 constants to short-hex format (`0x1` vs `0x00000001`).
+    - Added aligned `StringBuilder` diagnostic output in `toString()`.
 
 ## Author
 Developed by **Trevor Maggs**.
 
 ## Licence
 Internal / Proprietary
+
+---

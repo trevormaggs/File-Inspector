@@ -11,9 +11,9 @@ import java.util.Map;
  * A POSIX-specific implementation of a file node, providing metadata for Unix-like systems.
  * 
  * <p>
- * This class retrieves standard POSIX attributes (owner, group, permissions) and leverages the
- * {@code unix:*} attribute view to extract low-level system data such as numeric UIDs, GIDs, and
- * the raw file mode bit-mask.
+ * This class retrieves standard POSIX attributes, including owner, group, permissions and leverages
+ * the {@code unix:*} attribute view to extract low-level system data such as numeric UIDs, GIDs,
+ * and the raw file mode bit-mask.
  * </p>
  * 
  * @author Trevor Maggs
@@ -39,12 +39,15 @@ public final class PosixNode extends AbstractFileNode implements PosixView
     PosixNode(Path path, boolean followSymlink) throws IOException
     {
         super(path, followSymlink);
+
         this.posixAttrs = (PosixFileAttributes) this.attrs;
         this.attrMap = Files.readAttributes(path, "unix:*", this.options);
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the name of the user that owns the file.
+     * 
+     * @return the owner name
      */
     @Override
     public String getOwner()
@@ -53,7 +56,9 @@ public final class PosixNode extends AbstractFileNode implements PosixView
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the name of the group that owns the file.
+     * 
+     * @return the group name
      */
     @Override
     public String getGroup()
@@ -62,9 +67,9 @@ public final class PosixNode extends AbstractFileNode implements PosixView
     }
 
     /**
-     * Returns the permissions in the standard 'rwxrwxrwx' format.
+     * Returns the permissions of the file in rwxrwxrwx string format.
      * 
-     * @return a string representation of the POSIX permissions
+     * @return the string representation of POSIX permissions
      */
     @Override
     public String getPermissions()
@@ -73,7 +78,8 @@ public final class PosixNode extends AbstractFileNode implements PosixView
     }
 
     /**
-     * Retrieves the raw mode bitmask from the Unix-specific attribute map.
+     * Returns the raw numeric mode (permissions and type bits) of the file, typically represented
+     * in octal (e.g., 0755).
      * 
      * @return the integer mode, for example: 0100644 for a regular file
      */
@@ -86,29 +92,28 @@ public final class PosixNode extends AbstractFileNode implements PosixView
     /**
      * Retrieves the numeric User ID (UID) of the owner.
      * 
-     * @return the UID integer, or -1 if not available
+     * @return the UID integer, or {@link #UNKNOWN_ID} if not available
      */
     @Override
     public int getUID()
     {
-        return (int) attrMap.getOrDefault("uid", -1);
+        return (int) attrMap.getOrDefault("uid", UNKNOWN_ID);
     }
 
     /**
      * Retrieves the numeric Group ID (GID) of the group.
-     * 
-     * @return the GID integer, or -1 if not available
+     * * @return the GID integer, or {@link #UNKNOWN_ID} if not available
      */
     @Override
     public int getGID()
     {
-        return (int) attrMap.getOrDefault("gid", -1);
+        return (int) attrMap.getOrDefault("gid", UNKNOWN_ID);
     }
 
     /**
      * Extracts the file type character by applying the {@code S_IFMT} mask to the raw file mode.
      * 
-     * @return a character representing the POSIX file type (e.g., 'd', 'l', '-')
+     * @return a POSIX style character representing the POSIX file type (e.g., 'd', 'l', '-')
      */
     @Override
     public char toPosixTypeChar()
@@ -143,7 +148,7 @@ public final class PosixNode extends AbstractFileNode implements PosixView
      * Example output: {@code -rwxr-xr-x}
      * </p>
      * 
-     * @return the full type and permission string
+     * @return the full type and POSIX permission string
      */
     @Override
     public String getPermissionsString()
@@ -167,6 +172,37 @@ public final class PosixNode extends AbstractFileNode implements PosixView
         sb.append((mode & S_IROTH) != 0 ? 'r' : '-');
         sb.append((mode & S_IWOTH) != 0 ? 'w' : '-');
         sb.append((mode & S_IXOTH) != 0 ? 'x' : '-');
+
+        return sb.toString();
+    }
+
+    /**
+     * Generates a formatted diagnostic summary of the POSIX attributes.
+     * 
+     * @return a formatted string containing all POSIX metadata
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        String sectionHeader = isDirectory() ? "POSIX Directory Attributes" : "POSIX File Attributes";
+        String nameLabel = isDirectory() ? "[Directory Name]" : "[File Name]";
+
+        sb.append(String.format("[%s]%n", sectionHeader));
+        sb.append(String.format("  %-20s %s%n", nameLabel, getName()));
+        sb.append(String.format("  %-20s %s%n", "[Real Path]", toRealPathString()));
+        sb.append(String.format("  %-20s %s%n", "[Directory]", isDirectory()));
+        sb.append(String.format("  %-20s %s%n", "[Regular File]", isRegularFile()));
+        sb.append(String.format("  %-20s %s%n", "[Other File]", isOtherFile()));
+        sb.append(String.format("  %-20s %s%n", "[Symlink]", isSymLink()));
+        sb.append(String.format("  %-20s %s%n", "[Broken Link]", brokenSymLink()));
+        sb.append(String.format("  %-20s %s bytes%n", "[File size]", size()));
+
+        // POSIX Specific
+        sb.append(String.format("  %-20s %s%n", "[Owner]", getOwner()));
+        sb.append(String.format("  %-20s %s%n", "[Group]", getGroup()));
+        sb.append(String.format("  %-20s %d:%d%n", "[UID:GID]", getUID(), getGID()));
+        sb.append(String.format("  %-20s %s (%04o)%n", "[Permissions]", getPermissionsString(), getMode()));
 
         return sb.toString();
     }

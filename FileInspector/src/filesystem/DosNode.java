@@ -7,13 +7,12 @@ import java.nio.file.attribute.DosFileAttributes;
 import java.util.Map;
 
 /**
- * A Windows-specific implementation of a file node, providing deep access to DOS and NTFS
- * attributes.
+ * A Windows-specific implementation of a file node used to inspect DOS and NTFS attributes.
  * 
  * <p>
- * This implementation uses both the {@link DosFileAttributes} view for standard flags (Hidden,
- * Read-Only, etc.) and the {@code dos:*} attribute map to retrieve the raw Win32 attribute bitmask
- * for advanced flags like compression, encryption, and sparse files.
+ * This implementation uses both the {@link DosFileAttributes} view for standard flags, such as
+ * Hidden, Read-Only, etc. and the {@code dos:*} attribute map to retrieve the raw Win32 attribute
+ * bitmask for advanced flags like compression, encryption, and sparse files.
  * </p>
  * 
  * @author Trevor Maggs
@@ -29,9 +28,10 @@ public final class DosNode extends AbstractFileNode implements DosView
      * Package-private constructor used by the {@link FileInspector} factory.
      * 
      * @param path
-     *        The path to the file or directory
+     *        the path to the file or directory
      * @param followSymlink
      *        whether to follow symbolic links during attribute capture
+     *
      * @throws IOException
      *         if the file is inaccessible or the filesystem does not support DOS attributes
      */
@@ -44,28 +44,45 @@ public final class DosNode extends AbstractFileNode implements DosView
         this.attrMap = Files.readAttributes(path, "dos:*", this.options);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file is an archive file. Typically used by backup programs to identify files
+     * that need to be backed up.
+     * 
+     * @return true if the archive bit is set
+     */
     @Override
     public boolean isArchiveFile()
     {
         return dosAttribs.isArchive();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file is hidden.
+     * 
+     * @return true if the file is marked as hidden by the filesystem
+     */
     @Override
     public boolean isHidden()
     {
         return dosAttribs.isHidden();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file is read-only.
+     * 
+     * @return true if the file cannot be written to or deleted
+     */
     @Override
     public boolean isReadOnly()
     {
         return dosAttribs.isReadOnly();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file is a system file or is used exclusively by the operating system.
+     * 
+     * @return true if the system bit is set
+     */
     @Override
     public boolean isSystemFile()
     {
@@ -85,56 +102,95 @@ public final class DosNode extends AbstractFileNode implements DosView
         return (mask instanceof Number) ? ((Number) mask).intValue() : 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file is being used for temporary storage. File systems avoid writing the data
+     * back to mass storage if sufficient cache memory is available.
+     * 
+     * @return true if the FILE_ATTRIBUTE_TEMPORARY bit is set
+     */
     @Override
     public boolean isTemporary()
     {
         return (getAttributesMask() & FILE_ATTRIBUTE_TEMPORARY) != 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file is a sparse file. Sparse files are large files that contain mostly zeros,
+     * where only non-zero data is physically stored on disk.
+     * 
+     * @return true if the FILE_ATTRIBUTE_SPARSE_FILE bit is set
+     */
     @Override
     public boolean isSparseFile()
     {
         return (getAttributesMask() & FILE_ATTRIBUTE_SPARSE_FILE) != 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file or directory has an associated reparse point, or is a symbolic link
+     * junction.
+     * 
+     * @return true if the FILE_ATTRIBUTE_REPARSE_POINT bit is set
+     */
     @Override
     public boolean isReparsePoint()
     {
         return (getAttributesMask() & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file or directory is compressed. For a file, this means all data in the file is
+     * compressed.
+     * 
+     * @return true if the FILE_ATTRIBUTE_COMPRESSED bit is set
+     */
     @Override
     public boolean isCompressed()
     {
         return (getAttributesMask() & FILE_ATTRIBUTE_COMPRESSED) != 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file data is not immediately available. This attribute indicates that the file
+     * data is physically moved to offline storage (e.g., Remote Storage).
+     * 
+     * @return true if the FILE_ATTRIBUTE_OFFLINE bit is set
+     */
     @Override
     public boolean isOffline()
     {
         return (getAttributesMask() & FILE_ATTRIBUTE_OFFLINE) != 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file is not to be indexed by the content indexing service.
+     * 
+     * @return true if the FILE_ATTRIBUTE_NOT_CONTENT_INDEXED bit is set
+     */
     @Override
     public boolean isNotContentIndexed()
     {
         return (getAttributesMask() & FILE_ATTRIBUTE_NOT_CONTENT_INDEXED) != 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file or directory is encrypted. For a file, this means all data streams in the
+     * file are encrypted.
+     * 
+     * @return true if the FILE_ATTRIBUTE_ENCRYPTED bit is set
+     */
     @Override
     public boolean isEncrypted()
     {
         return (getAttributesMask() & FILE_ATTRIBUTE_ENCRYPTED) != 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks if the file is excluded from the data integrity scan. When this attribute is set on a
+     * directory, it is the default for new files created therein. (Specific to ReFS volumes).
+     * 
+     * @return true if the FILE_ATTRIBUTE_NO_SCRUB_DATA bit is set
+     */
     @Override
     public boolean isNoScrubData()
     {
@@ -182,7 +238,7 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Appends attribute names to the StringBuilder with proper separation.
+     * Appends attribute names to the StringBuilder with clear separation.
      * 
      * @param sb
      *        the StringBuilder to append to
