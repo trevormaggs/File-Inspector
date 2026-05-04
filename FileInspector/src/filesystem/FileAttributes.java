@@ -17,9 +17,9 @@ public interface FileAttributes
     public boolean isOtherFile();
     public boolean isSymLink();
     public boolean brokenSymLink();
-    long creationTime();
-    long lastAccessTime();
-    long lastModifiedTime();
-    Object fileKey();
+    public long creationTime();
+    public long lastAccessTime();
+    public long lastModifiedTime();
+    public Object fileKey();
     public <T> Optional<T> as(Class<T> type);
 }

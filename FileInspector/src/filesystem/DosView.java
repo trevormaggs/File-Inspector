@@ -19,9 +19,9 @@ package filesystem;
 public interface DosView
 {
     // Low Byte (0x01 to 0x80)
-    int FILE_ATTRIBUTE_READONLY = 0x1;
-    int FILE_ATTRIBUTE_HIDDEN = 0x2;
-    int FILE_ATTRIBUTE_SYSTEM = 0x4;
+    int FILE_ATTRIBUTE_READONLY = 0x01;
+    int FILE_ATTRIBUTE_HIDDEN = 0x02;
+    int FILE_ATTRIBUTE_SYSTEM = 0x04;
     int FILE_ATTRIBUTE_DIRECTORY = 0x10;
     int FILE_ATTRIBUTE_ARCHIVE = 0x20;
     int FILE_ATTRIBUTE_DEVICE = 0x40;
