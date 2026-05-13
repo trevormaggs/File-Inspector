@@ -39,7 +39,6 @@ public final class DosNode extends AbstractFileNode implements DosView
     {
         super(path, followSymlink);
 
-        // Cast parent attributes for standard DOS flags
         this.dosAttribs = (DosFileAttributes) this.attrs;
         this.attrMap = Files.readAttributes(path, "dos:*", this.options);
     }
@@ -233,6 +232,66 @@ public final class DosNode extends AbstractFileNode implements DosView
         if ((mask & FILE_ATTRIBUTE_PINNED) != 0) appendFlag(sb, "PINNED");
         if ((mask & FILE_ATTRIBUTE_UNPINNED) != 0) appendFlag(sb, "UNPINNED");
         if ((mask & FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS) != 0) appendFlag(sb, "RECALL_ON_DATA_ACCESS");
+
+        return sb.toString();
+    }
+
+    /**
+     * Emulates ExifTool's Windows behaviour by mapping DOS attributes to a 10-character POSIX-style
+     * string.
+     *
+     * @return a string such as "-r--r--r--" (Read-only) or "-rw-rw-rw-" (Standard)
+     */
+    @Override
+    public String getPermissionsString()
+    {
+        StringBuilder sb = new StringBuilder(10);
+        char typeChar = isDirectory() ? 'd' : '-';
+        String r = "r";
+        String w = (!dosAttribs.isReadOnly() ? "w" : "-");
+        String x = "-";
+        String triplet = r + w + x;
+
+        sb.append(typeChar);
+        sb.append(triplet); // User
+        sb.append(triplet); // Group
+        sb.append(triplet); // Other
+
+        return sb.toString();
+    }
+
+    /**
+     * Generates a formatted diagnostic summary of the DOS/Win32 attributes.
+     * 
+     * @return a formatted string containing Windows-specific metadata
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        int mask = getAttributesMask();
+        String activeFlags = getAttributesString();
+        String sectionHeader = isDirectory() ? "DOS Directory Attributes" : "DOS File Attributes";
+        String nameLabel = isDirectory() ? "[Directory Name]" : "[File Name]";
+
+        sb.append(String.format("[%s]%n", sectionHeader));
+        sb.append(String.format("  %-20s %s%n", nameLabel, getName()));
+        sb.append(String.format("  %-20s %s%n", "[Real Path]", toRealPathString()));
+        sb.append(String.format("  %-20s %s%n", "[Directory]", isDirectory()));
+        sb.append(String.format("  %-20s %s%n", "[Regular File]", isRegularFile()));
+        sb.append(String.format("  %-20s %s%n", "[Symlink]", isSymLink()));
+        sb.append(String.format("  %-20s %s bytes%n", "[File Size]", size()));
+
+        // --- Core DOS Attributes
+        sb.append(String.format("  %-20s %b%n", "[Read-only]", isReadOnly()));
+        sb.append(String.format("  %-20s %b%n", "[Hidden]", isHidden()));
+        sb.append(String.format("  %-20s %b%n", "[System]", isSystemFile()));
+        sb.append(String.format("  %-20s %b%n", "[Archive]", isArchiveFile()));
+
+        // --- DOS/Windows Specific Sections ---
+        sb.append(String.format("  %-20s %s%n", "[File Permissions]", getPermissionsString()));
+        sb.append(String.format("  %-20s 0x%08X (%d)%n", "[Attributes Mask]", mask, mask));
+        sb.append(String.format("  %-20s %s%n", "[Active Flags]", activeFlags.isEmpty() ? "NORMAL" : activeFlags));
 
         return sb.toString();
     }

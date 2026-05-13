@@ -3,23 +3,24 @@ package filesystem;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public interface FileAttributes
+interface FileAttributes
 {
-    public Path getOriginalPath();
-    public Path getAbsolutePath();
-    public String getName();
-    public long size();
-    public Path getRealPath();
-    public String toRealPathString();
-    public boolean exists();
-    public boolean isDirectory();
-    public boolean isRegularFile();
-    public boolean isOtherFile();
-    public boolean isSymLink();
-    public boolean brokenSymLink();
-    public long creationTime();
-    public long lastAccessTime();
-    public long lastModifiedTime();
-    public Object fileKey();
-    public <T> Optional<T> as(Class<T> type);
+    Path getOriginalPath();
+    Path getAbsolutePath();
+    String getName();
+    long size();
+    Path getRealPath();
+    String toRealPathString();
+    String getPermissionsString();
+    boolean exists();
+    boolean isDirectory();
+    boolean isRegularFile();
+    boolean isOtherFile();
+    boolean isSymLink();
+    boolean brokenSymLink();
+    long creationTime();
+    long lastAccessTime();
+    long lastModifiedTime();
+    Object fileKey();
+    <T> Optional<T> as(Class<T> type);
 }

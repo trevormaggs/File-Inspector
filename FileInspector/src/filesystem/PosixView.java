@@ -51,5 +51,4 @@ public interface PosixView
     int getUID();
     int getGID();
     char toPosixTypeChar();
-    String getPermissionsString();
 }
