@@ -9,12 +9,8 @@ package filesystem;
  * file attributes.
  * </p>
  * 
- * @see <a href=
- *      "https://learn.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants">Win32 File
- *      Attribute Constants</a>
- * @see <a href=
- *      "https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-win32_find_dataw">WIN32_FIND_DATAW
- *      structure</a>
+ * @see <a href="https://learn.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants">Win32 File Attribute Constants</a>
+ * @see <a href="https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-win32_find_dataw">WIN32_FIND_DATAW structure</a>
  */
 public interface DosView
 {

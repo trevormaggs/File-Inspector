@@ -7,14 +7,16 @@ import java.nio.file.attribute.DosFileAttributes;
 import java.util.Map;
 
 /**
- * A Windows-specific implementation of a file node used to inspect DOS and NTFS attributes.
- * 
+ * A Windows-specific implementation of a file node that provides access to DOS and Windows file
+ * attributes.
+ *
  * <p>
- * This implementation uses both the {@link DosFileAttributes} view for standard flags, such as
- * Hidden, Read-Only, etc. and the {@code dos:*} attribute map to retrieve the raw Win32 attribute
- * bitmask for advanced flags like compression, encryption, and sparse files.
+ * This implementation uses the {@link DosFileAttributes} view for standard DOS attributes such as
+ * hidden, read-only, system, and archive, and the {@code dos:*} attribute view to retrieve the raw
+ * Windows attribute bitmask for additional attributes such as compression, encryption, and sparse
+ * files.
  * </p>
- * 
+ *
  * @author Trevor Maggs
  * @version 1.0
  * @since 27 April 2026
@@ -26,11 +28,11 @@ public final class DosNode extends AbstractFileNode implements DosView
 
     /**
      * Package-private constructor used by the {@link FileInspector} factory.
-     * 
+     *
      * @param path
      *        the path to the file or directory
      * @param followSymlink
-     *        whether to follow symbolic links during attribute capture
+     *        whether symbolic links should be followed when capturing file attributes
      *
      * @throws IOException
      *         if the file is inaccessible or the filesystem does not support DOS attributes
@@ -44,10 +46,10 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file is an archive file. Typically used by backup programs to identify files
-     * that need to be backed up.
-     * 
-     * @return true if the archive bit is set
+     * Checks if the file has the Windows archive attribute set. The archive attribute is commonly
+     * used by backup software to identify files that have been modified since the last backup.
+     *
+     * @return {@code true} if the archive attribute is set
      */
     @Override
     public boolean isArchiveFile()
@@ -56,9 +58,9 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file is hidden.
-     * 
-     * @return true if the file is marked as hidden by the filesystem
+     * Checks if the file has the Windows hidden attribute set.
+     *
+     * @return {@code true} if the hidden attribute is set
      */
     @Override
     public boolean isHidden()
@@ -67,9 +69,9 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file is read-only.
-     * 
-     * @return true if the file cannot be written to or deleted
+     * Checks if the file has the Windows read-only attribute set.
+     *
+     * @return {@code true} if the read-only attribute is set
      */
     @Override
     public boolean isReadOnly()
@@ -78,10 +80,11 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file is a system file or is used exclusively by the operating system.
-     * 
-     * @return true if the system bit is set
+     * Checks if the file or directory has the Windows System attribute set.
+     *
+     * @return {@code true} if the system attribute is set
      */
+
     @Override
     public boolean isSystemFile()
     {
@@ -89,9 +92,10 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Retrieves the raw Win32 file attribute constants as an integer mask.
-     * 
-     * @return the integer bitmask, or 0 if the "attributes" key is missing or invalid
+     * Retrieves the raw Windows file attribute constants as an integer bitmask.
+     *
+     * @return the integer bitmask, or {@code 0} if the {@code "attributes"} entry is missing or is
+     *         not a numeric value
      */
     @Override
     public int getAttributesMask()
@@ -102,10 +106,15 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file is being used for temporary storage. File systems avoid writing the data
-     * back to mass storage if sufficient cache memory is available.
-     * 
-     * @return true if the FILE_ATTRIBUTE_TEMPORARY bit is set
+     * Checks if the file has the Windows temporary attribute set.
+     *
+     * <p>
+     * This attribute indicates that the file is being used for temporary storage and that the
+     * operating system may avoid writing the file's data to permanent storage when sufficient cache
+     * memory is available.
+     * </p>
+     *
+     * @return {@code true} if the {@code FILE_ATTRIBUTE_TEMPORARY} bit is set
      */
     @Override
     public boolean isTemporary()
@@ -114,10 +123,14 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file is a sparse file. Sparse files are large files that contain mostly zeros,
-     * where only non-zero data is physically stored on disk.
-     * 
-     * @return true if the FILE_ATTRIBUTE_SPARSE_FILE bit is set
+     * Checks if the file is a sparse file.
+     *
+     * <p>
+     * A sparse file contains logically allocated regions that may not require corresponding
+     * physical disk storage, allowing storage space to be saved for regions containing zeros.
+     * </p>
+     *
+     * @return {@code true} if the {@code FILE_ATTRIBUTE_SPARSE_FILE} bit is set
      */
     @Override
     public boolean isSparseFile()
@@ -126,10 +139,14 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file or directory has an associated reparse point, or is a symbolic link
-     * junction.
-     * 
-     * @return true if the FILE_ATTRIBUTE_REPARSE_POINT bit is set
+     * Checks if the file or directory has the Windows reparse-point attribute set.
+     *
+     * <p>
+     * Reparse points are used by Windows for features such as symbolic links, junctions, and other
+     * filesystem-specific functionality.
+     * </p>
+     *
+     * @return {@code true} if the {@code FILE_ATTRIBUTE_REPARSE_POINT} bit is set
      */
     @Override
     public boolean isReparsePoint()
@@ -138,10 +155,9 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file or directory is compressed. For a file, this means all data in the file is
-     * compressed.
-     * 
-     * @return true if the FILE_ATTRIBUTE_COMPRESSED bit is set
+     * Checks if the file has the Windows compressed attribute set.
+     *
+     * @return {@code true} if the {@code FILE_ATTRIBUTE_COMPRESSED} bit is set
      */
     @Override
     public boolean isCompressed()
@@ -150,10 +166,14 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file data is not immediately available. This attribute indicates that the file
-     * data is physically moved to offline storage (e.g., Remote Storage).
-     * 
-     * @return true if the FILE_ATTRIBUTE_OFFLINE bit is set
+     * Checks if the file data is not immediately available.
+     *
+     * <p>
+     * This attribute indicates that the file data has been physically moved to offline storage,
+     * such as Remote Storage.
+     * </p>
+     *
+     * @return {@code true} if the {@code FILE_ATTRIBUTE_OFFLINE} bit is set
      */
     @Override
     public boolean isOffline()
@@ -162,9 +182,9 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file is not to be indexed by the content indexing service.
-     * 
-     * @return true if the FILE_ATTRIBUTE_NOT_CONTENT_INDEXED bit is set
+     * Checks if the file or directory is excluded from content indexing.
+     *
+     * @return {@code true} if the {@code FILE_ATTRIBUTE_NOT_CONTENT_INDEXED} bit is set
      */
     @Override
     public boolean isNotContentIndexed()
@@ -173,10 +193,13 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file or directory is encrypted. For a file, this means all data streams in the
-     * file are encrypted.
-     * 
-     * @return true if the FILE_ATTRIBUTE_ENCRYPTED bit is set
+     * Checks if the file or directory has the Windows encrypted attribute set.
+     *
+     * <p>
+     * For a file, this indicates that the file's data streams are encrypted.
+     * </p>
+     *
+     * @return {@code true} if the {@code FILE_ATTRIBUTE_ENCRYPTED} bit is set
      */
     @Override
     public boolean isEncrypted()
@@ -185,10 +208,14 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Checks if the file is excluded from the data integrity scan. When this attribute is set on a
-     * directory, it is the default for new files created therein. (Specific to ReFS volumes).
-     * 
-     * @return true if the FILE_ATTRIBUTE_NO_SCRUB_DATA bit is set
+     * Checks if the file or directory is excluded from data integrity scanning.
+     *
+     * <p>
+     * When this attribute is set on a directory, it becomes the default for new files created
+     * within that directory. This attribute is specific to ReFS volumes.
+     * </p>
+     *
+     * @return {@code true} if the {@code FILE_ATTRIBUTE_NO_SCRUB_DATA} bit is set
      */
     @Override
     public boolean isNoScrubData()
@@ -197,14 +224,14 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Generates a human-readable string representation of all active Win32 attributes.
-     * *
+     * Generates a human-readable string representation of all active Windows file attributes.
+     *
      * <p>
-     * Active flags are concatenated with a " | " separator (e.g., "READONLY | HIDDEN |
-     * COMPRESSED").
+     * Active flags are concatenated using a {@code " | "} separator, for example
+     * {@code "READONLY | HIDDEN | COMPRESSED"}.
      * </p>
-     * 
-     * @return a pipe-delimited string of attribute names
+     *
+     * @return a pipe-delimited string containing the names of the active attributes
      */
     @Override
     public String getAttributesString()
@@ -237,10 +264,17 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Emulates ExifTool's Windows behaviour by mapping DOS attributes to a 10-character POSIX-style
-     * string.
+     * Generates a POSIX-style permission string based on the Windows DOS
+     * read-only attribute.
      *
-     * @return a string such as "-r--r--r--" (Read-only) or "-rw-rw-rw-" (Standard)
+     * <p>
+     * This is a synthetic representation intended to emulate ExifTool's Windows behaviour; it does
+     * not represent actual POSIX filesystem permissions. The owner, group, and other permission
+     * bits are derived from the same read-only state.
+     * </p>
+     *
+     * @return a 10-character POSIX-style permission string, such as {@code "-r--r--r--"} for a
+     *         read-only file or {@code "-rw-rw-rw-"} for a writable file
      */
     @Override
     public String getPermissionsString()
@@ -261,9 +295,9 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Generates a formatted diagnostic summary of the DOS/Win32 attributes.
-     * 
-     * @return a formatted string containing Windows-specific metadata
+     * Generates a formatted diagnostic summary of the DOS and Windows file attributes.
+     *
+     * @return a formatted string containing Windows-specific file metadata
      */
     @Override
     public String toString()
@@ -297,13 +331,13 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Appends attribute names to the StringBuilder with clear separation.
-     * 
+     * Appends an attribute name to the supplied {@link StringBuilder}. A separator is inserted when
+     * the builder already contains an attribute name.
+     *
      * @param sb
-     *        the StringBuilder to append to
-     * 
+     *        the builder to which the attribute name is appended
      * @param flag
-     *        the attribute name
+     *        the attribute name to append
      */
     private void appendFlag(StringBuilder sb, String flag)
     {

@@ -4,7 +4,7 @@ A high-quality, comprehensive Java 8 library for cross-platform filesystem attri
 
 ## Features
 
-- **Static Factory Design:** Centralised entry point via `FileInspector` for automatic OS/Filesystem detection.
+- **Static Factory Design:** Central entry point via `FileInspector` for automatic OS/Filesystem detection.
 - **Deep Windows Support:** Access to 20+ Win32 file attribute constants (Hidden, System, Compressed, Encrypted, Sparse, etc.) via `DosView`, now using optimised short-hex literals.
 - **POSIX Excellence:** Comprehensive Unix/Linux/macOS metadata including numeric UID/GID, octal modes, and permission strings.
 - **Fluent Adapter Pattern:** Use the `.as(Class<T> type)` method to safely downcast to platform-specific views without risky `instanceof` checks.
