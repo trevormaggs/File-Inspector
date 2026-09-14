@@ -83,7 +83,13 @@ if (nix.isPresent())
 - `as(Class<T> type)`: Returns an `Optional<T>` adapter for specialised views.
 - `toString()`: Returns a multi-line, formatted diagnostic summary.
 
-## Change Logs
+## Requirements
+
+- Java 8 or later
+- Windows for `DosView` functionality
+- POSIX-compatible filesystem for `PosixView` functionality
+
+## Changelog
 - **April 2026:** - Migrated to static factory pattern.
     - Implemented `Optional` adapters.
     - Simplified Win32 constants to short-hex format (`0x1` vs `0x00000001`).
