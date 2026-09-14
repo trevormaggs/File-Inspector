@@ -9,33 +9,30 @@ Windows and POSIX filesystem information when available.
 
 ## Features
 
--   **Simple file inspection:** Use `FileInspector` as the main entry
-    point for inspecting files and directories.
--   **Windows file attributes:** Access Windows attributes such as
-    Hidden, System, Compressed, Encrypted, Sparse, and more through
-    `DosView`.
--   **POSIX/Unix information:** Access Unix/Linux/macOS metadata
-    including UID, GID, file modes, and permission strings through
-    `PosixView`.
--   **Platform-specific information:** Use the `.as(Class<T> type)`
-    method to access additional information when it is supported by the
-    filesystem.
--   **Diagnostic output:** Built-in `toString()` methods provide
-    readable summaries of file metadata.
--   **Java 8 compatible:** Written for Java 8 with no external
-    dependencies.
+-   **Simple file inspection:** Use `FileInspector` as the main entry point for inspecting files and directories.
+-   **Windows file attributes:** Access Windows attributes such as Hidden, System, Compressed, Encrypted, Sparse, and more through `DosView`.
+-   **POSIX/Unix information:** Access Unix/Linux/macOS metadata including UID, GID, file modes, and permission strings through `PosixView`.
+-   **Platform-specific information:** Use the `.as(Class<T> type)` method to access additional information when it is supported by the filesystem.
+-   **Diagnostic output:** Built-in `toString()` methods provide readable summaries of file metadata.
+-   **Java 8 compatible:** Written for Java 8 with no external dependencies.
+
+## Architecture
+
+The library is built on four core pillars:
+
+1. **`FileAttributes` (Interface):** The common contract for all file nodes.
+2. **`FileInspector` (Static Factory):** Detects the filesystem capabilities and returns the appropriate implementation.
+3. **`AbstractFileNode` (Base Class):** Handles shared logic like path normalisation and attribute snapshots.
+4. **`DosView` & `PosixView` (Capability Interfaces):** Provide access to deep, platform-specific attributes.
 
 ## How It Works
 
 The library provides a common `FileAttributes` interface for basic file
 information.
 
-`FileInspector` examines the file and returns an appropriate
-implementation. Additional platform-specific information can be accessed
-through `DosView` or `PosixView` when supported.
+`FileInspector` examines the file and returns an appropriate implementation. Additional platform-specific information can be accessed through `DosView` or `PosixView` when supported.
 
-This keeps the basic API simple while still providing access to detailed
-filesystem information.
+This keeps the basic API simple while still providing access to detailed filesystem information.
 
 ## Requirements
 
@@ -45,8 +42,7 @@ filesystem information.
 
 ## Installation
 
-Simply include the `filesystem` package source files in your Java 8
-project. No external JARs are required.
+Simply include the `filesystem` package source files in your Java 8 project. No external JARs are required.
 
 ## Usage
 
@@ -71,8 +67,7 @@ catch (IOException e)
 
 ### Windows File Attributes
 
-Windows-specific information is available through `DosView` when
-supported:
+Windows-specific information is available through `DosView` when supported:
 
 ``` java
 Optional<DosView> dos = node.as(DosView.class);
@@ -118,10 +113,8 @@ if (nix.isPresent())
 -   `getName()`: Returns the filename.
 -   `getOriginalPath()`: Returns the path as originally provided.
 -   `getAbsolutePath()`: Returns the normalised, absolute path.
--   `getRealPath()`: Resolves symbolic links to the final target on
-    disk.
--   `as(Class<T> type)`: Returns an `Optional<T>` for a supported
-    specialised view.
+-   `getRealPath()`: Resolves symbolic links to the final target on disk.
+-   `as(Class<T> type)`: Returns an `Optional<T>` for a supported specialised view.
 -   `toString()`: Returns a multi-line, formatted diagnostic summary.
 
 ## Changelog
@@ -130,8 +123,7 @@ if (nix.isPresent())
 
 -   Migrated to static factory pattern.
 -   Implemented `Optional` adapters.
--   Simplified Win32 constants to short-hex format (`0x1`
-    vs. `0x00000001`).
+-   Simplified Win32 constants to short-hex format (`0x1` vs. `0x00000001`).
 -   Added aligned `StringBuilder` diagnostic output in `toString()`.
 
 ## Author
