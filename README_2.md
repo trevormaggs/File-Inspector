@@ -1,11 +1,8 @@
 # Java FileSystem Inspection Library
 
-A lightweight Java library for inspecting files and directories and
-retrieving filesystem information such as file type, size, timestamps,
-permissions, and platform-specific attributes.
+A lightweight Java library for inspecting files and directories and retrieving filesystem information such as file type, size, timestamps, permissions, and platform-specific attributes.
 
-It provides a simple common API while also allowing access to additional
-Windows and POSIX filesystem information when available.
+It provides a simple common API while also allowing access to additional Windows and POSIX filesystem information when available.
 
 ## Features
 
