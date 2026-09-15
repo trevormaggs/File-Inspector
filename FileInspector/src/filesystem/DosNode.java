@@ -25,6 +25,51 @@ public final class DosNode extends AbstractFileNode implements DosView
 {
     private final DosFileAttributes dosAttribs;
     private final Map<String, Object> attrMap;
+    private enum AttributeFlag
+    {
+        READONLY(FILE_ATTRIBUTE_READONLY),
+        HIDDEN(FILE_ATTRIBUTE_HIDDEN),
+        SYSTEM(FILE_ATTRIBUTE_SYSTEM),
+        DIRECTORY(FILE_ATTRIBUTE_DIRECTORY),
+        ARCHIVE(FILE_ATTRIBUTE_ARCHIVE),
+        DEVICE(FILE_ATTRIBUTE_DEVICE),
+        NORMAL(FILE_ATTRIBUTE_NORMAL),
+        TEMPORARY(FILE_ATTRIBUTE_TEMPORARY),
+        SPARSE_FILE(FILE_ATTRIBUTE_SPARSE_FILE),
+        REPARSE_POINT(FILE_ATTRIBUTE_REPARSE_POINT),
+        COMPRESSED(FILE_ATTRIBUTE_COMPRESSED),
+        OFFLINE(FILE_ATTRIBUTE_OFFLINE),
+        NOT_CONTENT_INDEXED(FILE_ATTRIBUTE_NOT_CONTENT_INDEXED),
+        ENCRYPTED(FILE_ATTRIBUTE_ENCRYPTED),
+        INTEGRITY_STREAM(FILE_ATTRIBUTE_INTEGRITY_STREAM),
+        VIRTUAL(FILE_ATTRIBUTE_VIRTUAL),
+        NO_SCRUB_DATA(FILE_ATTRIBUTE_NO_SCRUB_DATA),
+        PINNED(FILE_ATTRIBUTE_PINNED),
+        UNPINNED(FILE_ATTRIBUTE_UNPINNED),
+        RECALL_ON_DATA_ACCESS(FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS);
+
+        private final int mask;
+
+        AttributeFlag(int mask)
+        {
+            this.mask = mask;
+        }
+
+        static String fromMask(int mask)
+        {
+            StringBuilder sb = new StringBuilder(128);
+
+            for (AttributeFlag flag : values())
+            {
+                if ((mask & flag.mask) != 0)
+                {
+                    appendFlag(sb, flag.name());
+                }
+            }
+
+            return sb.toString();
+        }
+    }
 
     /**
      * Package-private constructor used by the {@link FileInspector} factory.
@@ -236,31 +281,7 @@ public final class DosNode extends AbstractFileNode implements DosView
     @Override
     public String getAttributesString()
     {
-        int mask = getAttributesMask();
-        StringBuilder sb = new StringBuilder(128);
-
-        if ((mask & FILE_ATTRIBUTE_READONLY) != 0) appendFlag(sb, "READONLY");
-        if ((mask & FILE_ATTRIBUTE_HIDDEN) != 0) appendFlag(sb, "HIDDEN");
-        if ((mask & FILE_ATTRIBUTE_SYSTEM) != 0) appendFlag(sb, "SYSTEM");
-        if ((mask & FILE_ATTRIBUTE_DIRECTORY) != 0) appendFlag(sb, "DIRECTORY");
-        if ((mask & FILE_ATTRIBUTE_ARCHIVE) != 0) appendFlag(sb, "ARCHIVE");
-        if ((mask & FILE_ATTRIBUTE_DEVICE) != 0) appendFlag(sb, "DEVICE");
-        if ((mask & FILE_ATTRIBUTE_NORMAL) != 0) appendFlag(sb, "NORMAL");
-        if ((mask & FILE_ATTRIBUTE_TEMPORARY) != 0) appendFlag(sb, "TEMPORARY");
-        if ((mask & FILE_ATTRIBUTE_SPARSE_FILE) != 0) appendFlag(sb, "SPARSE_FILE");
-        if ((mask & FILE_ATTRIBUTE_REPARSE_POINT) != 0) appendFlag(sb, "REPARSE_POINT");
-        if ((mask & FILE_ATTRIBUTE_COMPRESSED) != 0) appendFlag(sb, "COMPRESSED");
-        if ((mask & FILE_ATTRIBUTE_OFFLINE) != 0) appendFlag(sb, "OFFLINE");
-        if ((mask & FILE_ATTRIBUTE_NOT_CONTENT_INDEXED) != 0) appendFlag(sb, "NOT_CONTENT_INDEXED");
-        if ((mask & FILE_ATTRIBUTE_ENCRYPTED) != 0) appendFlag(sb, "ENCRYPTED");
-        if ((mask & FILE_ATTRIBUTE_INTEGRITY_STREAM) != 0) appendFlag(sb, "INTEGRITY_STREAM");
-        if ((mask & FILE_ATTRIBUTE_VIRTUAL) != 0) appendFlag(sb, "VIRTUAL");
-        if ((mask & FILE_ATTRIBUTE_NO_SCRUB_DATA) != 0) appendFlag(sb, "NO_SCRUB_DATA");
-        if ((mask & FILE_ATTRIBUTE_PINNED) != 0) appendFlag(sb, "PINNED");
-        if ((mask & FILE_ATTRIBUTE_UNPINNED) != 0) appendFlag(sb, "UNPINNED");
-        if ((mask & FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS) != 0) appendFlag(sb, "RECALL_ON_DATA_ACCESS");
-
-        return sb.toString();
+        return AttributeFlag.fromMask(getAttributesMask());
     }
 
     /**
@@ -339,7 +360,7 @@ public final class DosNode extends AbstractFileNode implements DosView
      * @param flag
      *        the attribute name to append
      */
-    private void appendFlag(StringBuilder sb, String flag)
+    private static void appendFlag(StringBuilder sb, String flag)
     {
         if (sb.length() > 0)
         {
