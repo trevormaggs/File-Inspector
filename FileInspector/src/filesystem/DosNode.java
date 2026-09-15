@@ -25,6 +25,7 @@ public final class DosNode extends AbstractFileNode implements DosView
 {
     private final DosFileAttributes dosAttribs;
     private final Map<String, Object> attrMap;
+
     private enum AttributeFlag
     {
         READONLY(FILE_ATTRIBUTE_READONLY),
@@ -129,7 +130,6 @@ public final class DosNode extends AbstractFileNode implements DosView
      *
      * @return {@code true} if the system attribute is set
      */
-
     @Override
     public boolean isSystemFile()
     {
@@ -285,14 +285,11 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Generates a POSIX-style permission string based on the Windows DOS
-     * read-only attribute.
+     * Generates a POSIX-style permission string based on the Windows DOS read-only attribute.
      *
-     * <p>
-     * This is a synthetic representation intended to emulate ExifTool's Windows behaviour; it does
-     * not represent actual POSIX filesystem permissions. The owner, group, and other permission
-     * bits are derived from the same read-only state.
-     * </p>
+     * The returned string emulates the output produced by ExifTool on Windows. It does not
+     * represent actual POSIX filesystem permissions. The owner, group, and other permission bits
+     * are all derived from the same read-only state.
      *
      * @return a 10-character POSIX-style permission string, such as {@code "-r--r--r--"} for a
      *         read-only file or {@code "-rw-rw-rw-"} for a writable file
@@ -352,13 +349,13 @@ public final class DosNode extends AbstractFileNode implements DosView
     }
 
     /**
-     * Appends an attribute name to the supplied {@link StringBuilder}. A separator is inserted when
-     * the builder already contains an attribute name.
+     * Appends a flag to the specified {@link StringBuilder}, inserting a separator if the builder
+     * already contains text.
      *
      * @param sb
-     *        the builder to which the attribute name is appended
+     *        the builder to which the flag is appended
      * @param flag
-     *        the attribute name to append
+     *        the flag to append
      */
     private static void appendFlag(StringBuilder sb, String flag)
     {
